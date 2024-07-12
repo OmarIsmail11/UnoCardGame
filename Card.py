@@ -8,7 +8,7 @@ class Card:
         return f"({self._type}, {self._colour}, {self._number})"
     
     def __repr__(self):
-        return f"(Type: {self._type}, Colour: {self._colour}, Number: {self._number})"
+        return f"({self._type}, {self._colour} , {self._number})"
     @property
     def type(self):
         return self._type
