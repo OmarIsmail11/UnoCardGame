@@ -5,10 +5,10 @@ class Card:
         self._number = number
 
     def __str__(self):
-        return f"({self._colour}, {self._number}, {self._type})"
+        return f"({self._type}, {self._colour}, {self._number})"
     
     def __repr__(self):
-        return f"({self._colour}, {self._number}, {self._type})"
+        return f"(Type: {self._type}, Colour: {self._colour}, Number: {self._number})"
     @property
     def type(self):
         return self._type
