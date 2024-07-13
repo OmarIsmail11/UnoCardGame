@@ -41,13 +41,35 @@ class GameManager:
     def ReadCSVFile(self):
         with open("Cards.csv", encoding="utf-8") as file:
             reader = csv.DictReader(file, fieldnames=["type", "colour", "number"])
+            next(reader)
             for row in reader:
                 UnoCard = Card.Card(row["type"],row["colour"],row["number"])
                 self._AllCards.append(UnoCard)
-           
-    def StartGame(self):
+
+    def PrintTutorial(self):
         print("==========================# Welcome to UNO PvP #===========================")
-        print("Rules:\n     1)Each player starts with a deck of 7 cards\n     2)First to finish his deck of cards wins!")
+        print("Rules:")
+        print(f"1) Match the cards: Players take turn to play a card from their deck that matches the top card of the discard pile by color or number") 
+        print(f"2) Action cards: Use Skip, Reverse, Draw Two, Wild, and Wild Draw Four cards for special effects ( These have no numbers on them to match with ).")
+        print(f"3) Draw if no match: Draw a card from the draw pile if you can't play a matching card; play if possible, otherwise pass")
+        print(f"4) Win by playing all cards: The first player to get rid of all their cards wins the game")
+        print(f"\nCards' Symbols:")
+        print(f"- All cards consist of three parts as following (type of card, colour, number).")
+        print(f"1) Normal Card: {self._AllCards[30]} -> Normal Card with the yellow colour and the number 6")
+        print(f"2) Skip Card: {self._AllCards[84]} -> Skip Card with the red colour")
+        print(f"3) Reverse Card: {self._AllCards[82]} -> Reverse Card with the blue colour")
+        print(f"4) Draw 2 Card: {self._AllCards[96]} -> Draw 2 Card with the green colour")
+        print(f"5) WildCard: {self._AllCards[102]} -> WildCard")
+        print(f"6) Draw 4 WildCard: {self._AllCards[105]} -> Draw 4 WildCard")
+        print("\nHow to play the cards:")
+        print("1) Normal Card: You match the either the colour or the number with the card on discard pile, otherwise can't be played.")
+        print("2) Skip Card: You match only with the colour. Skips the other player's turn.")
+        print("3) Reverse Card: You match only with the colour. Reverses the turns which results in the same action as the skip card as this a 2 player game.")
+        print("4) Draw 2 Card: You match only with the colour. Makes opponent draw 2 cards and skips their turn.")
+        print("5) WildCard: If you have this consider yourself lucky as this card doesn't need to be matched and when played lets you choose what colour the opponent should play.")
+        print("6) Draw 4 WildCard: This is the most powerful card in the game ! Has same wildcard traits + opponent draws 4 cards and skips his turn.")
+        
+    def StartGame(self):
         self._Player1Name = input("Player 1 please enter your name : ")
         self._Player2Name = input("Player 2 please enter your name: ")
         for _ in range(7):
@@ -75,4 +97,11 @@ class GameManager:
                 print(f"{self._Player2Name}' Deck:\n{self._Player2Deck}")
                 return
         
+    def PlayGame(self):
+        CardOnTable = random.choice(self._AllCards)
+        self._AllCards.remove(CardOnTable)
+        while len(self._Player1Deck) != 0 and len(self._Player2Deck) != 0:
+            #Player 1's Turn
+            GameManager.PrintDeck(self, self._Player1Name)
+
 

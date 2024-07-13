@@ -5,10 +5,22 @@ class Card:
         self._number = number
 
     def __str__(self):
-        return f"({self._type}, {self._colour}, {self._number})"
+        if self._type == "#️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        if self._type == "🌐➕4️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        if self._type == "➕2️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        return f"({self._type} , {self._colour} , {self._number})"
     
     def __repr__(self):
-        return f"({self._type}, {self._colour} , {self._number})"
+        if self._type == "#️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        if self._type == "🌐➕4️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        if self._type == "➕2️⃣":
+            return f"({self._type}  , {self._colour} , {self._number})"
+        return f"({self._type} , {self._colour} , {self._number})"
     @property
     def type(self):
         return self._type
