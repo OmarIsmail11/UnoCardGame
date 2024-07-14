@@ -1,7 +1,8 @@
 import Card
 import csv
 import random
-import os
+from os import system
+from pyfiglet import Figlet
 
 class GameManager:
     def __init__(self):
@@ -12,6 +13,8 @@ class GameManager:
         self._AllCards = []
         self._CardOnTable = Card.Card("","","")
         self._WildCardColour = ""
+        self._Player1SkipsTurn = False
+        self._Winner = ""
 
     @property
     def Player1Name(self):
@@ -48,6 +51,14 @@ class GameManager:
     @property
     def WildCardColour(self):
         return self._WildCardColour
+    
+    @property
+    def Player1SkipsTurn(self):
+        return self._Player1SkipsTurn
+
+    @property
+    def Winner(self):
+        return self._Winner
         
     def ReadCSVFile(self):
         with open("Cards.csv", encoding="utf-8") as file:
@@ -112,43 +123,409 @@ class GameManager:
                 return
         
     def PlayGame(self):
-        self._CardOnTable = random.choice(self._AllCards)
+        self._CardOnTable = random.choice(self._AllCards[:75])
         self._AllCards.remove(self._CardOnTable)
         while len(self._Player1Deck) != 0 and len(self._Player2Deck) != 0:
+            if len(self._Player1Deck) == 0:
+                break
+            if len(self._Player2Deck) == 0:
+                break
             #Player 1's Turn
-            print(f"{self._Player1Name}'s turn !")
-            GameManager.PrintDeck(self, self._Player1Name)
+            if self._Player1SkipsTurn == False:
+                print(f"{self._Player1Name}'s turn !")
+                GameManager.PrintDeck(self, self._Player1Name)
+                print(f"Card on Table: {self._CardOnTable}")
+                PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player1Name, self._Player1Deck)
+                match PlayerCanPlay:
+                    case True:
+                        CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                        while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
+                            CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                        CardToPlay = self._Player1Deck[CardToPlayIndex-1]
+                        CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                        while not CardCanBePlayed:
+                            CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                            CardToPlay = self._Player1Deck[CardToPlayIndex-1]
+                            CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                        GameManager.PlayCard(self, CardToPlay, self._Player1Name)
+                        SkipCard, ReverseCard, Draw2Card, WildCardColour, Draw4WildCardColour = GameManager.GetActionDetails(self, CardToPlay)
+                        #check if ReverseCard or SkipCard as both behave the same
+                        if SkipCard == True or ReverseCard == True:
+                            #skip opponent's turn
+                            print(f"{self._Player2Name} will skip his turn !\n\n")
+                            continue
+                        #check if Draw2Card
+                        elif Draw2Card == True:
+                            #opponent draws two cards and skips his turn
+                            GameManager.DrawCard(self, self._Player2Name)
+                            GameManager.DrawCard(self, self._Player2Name)
+                            #skip opponent's turn
+                            print(f"{self._Player2Name} will skip his turn !\n\n")
+                            continue
+                        elif WildCardColour != None:
+                            match WildCardColour:
+                                case "R":
+                                    self._CardOnTable._colour = "🔴"
+                                case "G":
+                                    self._CardOnTable._colour = "🟢"
+                                case "B":
+                                    self._CardOnTable._colour = "🔵"
+                                case "Y":
+                                    self._CardOnTable._colour = "🟡"
+                            print("After choosing colour:")
+                            print("After playing card:")
+                            GameManager.PrintDeck(self, self._Player1Name)
+                            print(f"Card on Table: {self._CardOnTable}\n\n")
+                        elif Draw4WildCardColour != None:
+                            GameManager.DrawCard(self, self._Player2Name)
+                            GameManager.DrawCard(self, self._Player2Name)
+                            GameManager.DrawCard(self, self._Player2Name)
+                            GameManager.DrawCard(self, self._Player2Name)
+                            match Draw4WildCardColour:
+                                case "R":
+                                    self._CardOnTable._colour = "🔴"
+                                case "G":
+                                    self._CardOnTable._colour = "🟢"
+                                case "B":
+                                    self._CardOnTable._colour = "🔵"
+                                case "Y":
+                                    self._CardOnTable._colour = "🟡"
+                            print("After choosing colour:")
+                            print("After playing card:")
+                            GameManager.PrintDeck(self, self._Player1Name)
+                            print(f"Card on Table: {self._CardOnTable}\n\n")
+                            #skip opponent's turn
+                            print(f"{self._Player2Name} will skip his turn !\n\n")
+                            continue
+                    case False:
+                            GameManager.DrawCard(self, self._Player1Name)
+                            print("You have no valid cards in deck therefore you drew a card.")
+                            print("After Drawing card:")
+                            GameManager.PrintDeck(self, self._Player1Name)
+                            print(f"Card on Table: {self._CardOnTable}")
+                            PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player1Name, self._Player1Deck)
+                            if not PlayerCanPlay:
+                                print("\n\nThere are no valid cards to play so you need to draw another card and skip turn.")
+                                GameManager.DrawCard(self, self._Player1Name)
+                                print("After Drawing card:")
+                                GameManager.PrintDeck(self, self._Player1Name)
+                                print(f"Card on Table: {self._CardOnTable}\n\n")
+                            else:
+                                CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                                while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
+                                    CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                                CardToPlay = self._Player1Deck[CardToPlayIndex-1]
+                                CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                                while not CardCanBePlayed:
+                                    CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                                    CardToPlay = self._Player1Deck[CardToPlayIndex-1]
+                                    CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                                GameManager.PlayCard(self, CardToPlay, self._Player1Name)
+                                SkipCard, ReverseCard, Draw2Card, WildCardColour, Draw4WildCardColour = GameManager.GetActionDetails(self, CardToPlay)
+                                #check if ReverseCard or SkipCard as both behave the same
+                                if SkipCard == True or ReverseCard == True:
+                                    #skip opponent's turn
+                                    print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    continue
+                                #check if Draw2Card
+                                elif Draw2Card == True:
+                                    #opponent draws two cards and skips his turn
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    #skip opponent's turn
+                                    print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    continue
+                                elif WildCardColour != None:
+                                    match WildCardColour:
+                                        case "R":
+                                            self._CardOnTable._colour = "🔴"
+                                        case "G":
+                                            self._CardOnTable._colour = "🟢"
+                                        case "B":
+                                            self._CardOnTable._colour = "🔵"
+                                        case "Y":
+                                            self._CardOnTable._colour = "🟡"
+                                    print("After choosing colour:")
+                                    print("After playing card:")
+                                    GameManager.PrintDeck(self, self._Player1Name)
+                                    print(f"Card on Table: {self._CardOnTable}\n\n")
+                                elif Draw4WildCardColour != None:
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    GameManager.DrawCard(self, self._Player2Name)
+                                    match Draw4WildCardColour:
+                                        case "R":
+                                            self._CardOnTable._colour = "🔴"
+                                        case "G":
+                                            self._CardOnTable._colour = "🟢"
+                                        case "B":
+                                            self._CardOnTable._colour = "🔵"
+                                        case "Y":
+                                            self._CardOnTable._colour = "🟡"
+                                    print("After choosing colour:")
+                                    print("After playing card:")
+                                    GameManager.PrintDeck(self, self._Player1Name)
+                                    print(f"Card on Table: {self._CardOnTable}")
+                                    #skip opponent's turn
+                                    print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    continue
+            self._Player1SkipsTurn = False
+            #Player 2's Turn
+            if len(self._Player1Deck) == 0:
+                break
+            if len(self._Player2Deck) == 0:
+                break
+            print(f"{self._Player2Name}'s turn !")
+            GameManager.PrintDeck(self, self._Player2Name)
             print(f"Card on Table: {self._CardOnTable}")
-            PlayOrDraw = input("Do you want to play or draw a card (P/D): ")
-            while (PlayOrDraw != "P" and PlayOrDraw != "D"):
-                PlayOrDraw = input("Invalid, please re-enter !\nDo you want to play or draw a card (P/D): ")
-            match PlayOrDraw:
-                case "P":
+            PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player2Name, self._Player2Deck)
+            match PlayerCanPlay:
+                case True:
                     CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
-                    while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
-                        CardToPlayIndex = int(input("Invalid, Please re-enter the number of card you want to play: "))
-                    CardToPlay = self._Player1Deck[CardToPlayIndex-1]
-                    GameManager.PlayCard(self, CardToPlay, self._Player1Name)    
-                case "D":
+                    while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player2Deck):
+                        CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                    CardToPlay = self._Player2Deck[CardToPlayIndex-1]
+                    CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                    while not CardCanBePlayed:
+                        CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                        CardToPlay = self._Player2Deck[CardToPlayIndex-1]
+                        CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                    GameManager.PlayCard(self, CardToPlay, self._Player2Name)
+                    SkipCard, ReverseCard, Draw2Card, WildCardColour, Draw4WildCardColour = GameManager.GetActionDetails(self, CardToPlay)
+                    #check if ReverseCard or SkipCard as both behave the same
+                    if SkipCard == True or ReverseCard == True:
+                        #skip opponent's turn
+                        self._Player1SkipsTurn = True
+                        print(f"{self._Player1Name} will skip his turn !\n\n")
+                        continue
+                    #check if Draw2Card
+                    elif Draw2Card == True:
+                        #opponent draws two cards and skips his turn
                         GameManager.DrawCard(self, self._Player1Name)
+                        GameManager.DrawCard(self, self._Player1Name)
+                        self._Player1SkipsTurn = True
+                        #skip opponent's turn
+                        print(f"{self._Player1Name} will skip his turn !\n\n")
+                        continue
+                    elif WildCardColour != None:
+                        match WildCardColour:
+                            case "R":
+                                self._CardOnTable._colour = "🔴"
+                            case "G":
+                                self._CardOnTable._colour = "🟢"
+                            case "B":
+                                self._CardOnTable._colour = "🔵"
+                            case "Y":
+                                self._CardOnTable._colour = "🟡"
+                        print("After choosing colour:")
+                        print("After playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif Draw4WildCardColour != None:
+                        GameManager.DrawCard(self, self._Player1Name)
+                        GameManager.DrawCard(self, self._Player1Name)
+                        GameManager.DrawCard(self, self._Player1Name)
+                        GameManager.DrawCard(self, self._Player1Name)
+                        match Draw4WildCardColour:
+                            case "R":
+                                self._CardOnTable._colour = "🔴"
+                            case "G":
+                                self._CardOnTable._colour = "🟢"
+                            case "B":
+                                self._CardOnTable._colour = "🔵"
+                            case "Y":
+                                self._CardOnTable._colour = "🟡"
+                        print("After choosing colour:")
+                        print("After playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                        #skip opponent's turn
+                        self._Player1SkipsTurn = True
+                        print(f"{self._Player1Name} will skip his turn !\n\n")
+                        continue
+                      
+                case False:
+                        print("You have no valid cards in deck therefore you drew a card.")
+                        GameManager.DrawCard(self, self._Player2Name)
                         print("After Drawing card:")
-                        GameManager.PrintDeck(self, self._Player1Name)
-                        PlayOrDraw = input("Do you want to play a card ? (Y/N):")
-                        while PlayOrDraw != "Y" and PlayOrDraw != "N":
-                            PlayOrDraw = input("Invalid choice ! Do you want to play a card ? (Y/N):")
-                        
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                        PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player2Name, self._Player2Deck)
+                        if not PlayerCanPlay:
+                            print("There are no valid cards to play so you need to draw another card and skip turn.")
+                            GameManager.DrawCard(self, self._Player2Name)
+                            print("After Drawing card:")
+                            GameManager.PrintDeck(self, self._Player2Name)
+                        else:
+                            CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                            while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player2Deck):
+                                CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                            CardToPlay = self._Player2Deck[CardToPlayIndex-1]
+                            CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                            while not CardCanBePlayed:
+                                CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                                CardToPlay = self._Player2Deck[CardToPlayIndex-1]
+                                CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
+                            GameManager.PlayCard(self, CardToPlay, self._Player1Name)
+                            SkipCard, ReverseCard, Draw2Card, WildCardColour, Draw4WildCardColour = GameManager.GetActionDetails(self, CardToPlay)
+                            #check if ReverseCard or SkipCard as both behave the same
+                            if SkipCard == True or ReverseCard == True:
+                                #skip opponent's turn
+                                self._Player1SkipsTurn = True
+                                print(f"{self._Player1Name} will skip his turn !\n\n")
+                                continue
+                            #check if Draw2Card
+                            elif Draw2Card == True:
+                                #opponent draws two cards and skips his turn
+                                GameManager.DrawCard(self, self._Player1Name)
+                                GameManager.DrawCard(self, self._Player1Name)
+                                #skip opponent's turn
+                                self._Player1SkipsTurn = True
+                                print(f"{self._Player1Name} will skip his turn !\n\n")
+                                continue
+                            elif WildCardColour != None:
+                                match WildCardColour:
+                                    case "R":
+                                        self._CardOnTable._colour = "🔴"
+                                    case "G":
+                                        self._CardOnTable._colour = "🟢"
+                                    case "B":
+                                        self._CardOnTable._colour = "🔵"
+                                    case "Y":
+                                        self._CardOnTable._colour = "🟡"
+                                print("After choosing colour:")
+                                print("After playing card:")
+                                GameManager.PrintDeck(self, self._Player2Name)
+                                print(f"Card on Table: {self._CardOnTable}")
+                            elif Draw4WildCardColour != None:
+                                GameManager.DrawCard(self, self._Player1Name)
+                                GameManager.DrawCard(self, self._Player1Name)
+                                GameManager.DrawCard(self, self._Player1Name)
+                                GameManager.DrawCard(self, self._Player1Name)
+                                match Draw4WildCardColour:
+                                    case "R":
+                                        self._CardOnTable._colour = "🔴"
+                                    case "G":
+                                        self._CardOnTable._colour = "🟢"
+                                    case "B":
+                                        self._CardOnTable._colour = "🔵"
+                                    case "Y":
+                                        self._CardOnTable._colour = "🟡"
+                                print("After choosing colour:")
+                                print("After playing card:")
+                                GameManager.PrintDeck(self, self._Player2Name)
+                                print(f"Card on Table: {self._CardOnTable}")
+                                #skip opponent's turn
+                                self._Player1SkipsTurn = True
+                                print(f"{self._Player1Name} will skip his turn !\n\n")
+                                continue            
+        if len(self._Player1Deck) == 0:
+            GameManager.DisplayWinner(self, self._Player1Name)
+        if len(self._Player2Deck) == 0:
+            GameManager.DisplayWinner(self, self._Player2Name)                
 
     def UpdatePile(self, player, card):
         match player:
             case self._Player1Name:
-                self._Player1Deck.remove(card)
+                if card in self._Player1Deck:
+                    self._Player1Deck.remove(card)
                 self._CardOnTable = card
                 return
             case self._Player2Name:
-                self._Player2Deck.remove(card)
+                if card in self._Player2Deck:
+                    self._Player2Deck.remove(card)
                 self._CardOnTable = card
                 return
+            
+    def CheckIfCardCanBePlayed(self, CardToPlay):
+        if CardToPlay._type == "#️⃣":
+            if self._CardOnTable._type == "#️⃣" and (CardToPlay._colour == self._CardOnTable._colour or CardToPlay._number == self._CardOnTable._number):
+                return True
+            elif self._CardOnTable._type == "🔄" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            else:
+                return False
+        elif CardToPlay._type == "🔄":
+            if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                return True  
+            elif self._CardOnTable._type == "🔄":
+                return True
+            elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            else:
+                return False
+        elif CardToPlay._type == "🚫":
+            if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                return True  
+            elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                return True
+            elif self._CardOnTable._type == "🚫":
+                return True
+            elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            else:
+                return False
+        elif CardToPlay._type == "➕2️⃣":
+            if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                return True  
+            elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                return True
+            elif self._CardOnTable._type == "🚫" and CardToPlay._colour == self._CardOnTable._colour:
+                return True
+            elif self._CardOnTable._type == "➕2️⃣":
+                return True
+            elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                return True
+            elif self._CardOnTable._type == "🌐➕4️⃣":
+                return True
+            else:
+                return False
+        elif CardToPlay._type == "🌐":
+                return True 
+        elif CardToPlay._type == "🌐➕4️⃣":
+                return True
 
+    def CheckIfPlayerCanPlay(self, player, PlayerDeck):
+        match player:
+            case self._Player1Name:
+                NumberOfCardsCanBePlayed = 0
+                for Card in self._Player1Deck:
+                    if GameManager.CheckIfCardCanBePlayed(self, Card):
+                        NumberOfCardsCanBePlayed += 1
+                if NumberOfCardsCanBePlayed == 0:
+                    return False
+                else:
+                    return True
+            case self._Player2Name:
+                NumberOfCardsCanBePlayed = 0
+                for Card in self._Player2Deck:
+                    if GameManager.CheckIfCardCanBePlayed(self, Card):
+                        NumberOfCardsCanBePlayed += 1
+                if NumberOfCardsCanBePlayed == 0:
+                    return False
+                else:
+                    return True
+
+            
     def PlayCard(self, CardToPlay, player):
         match player:
             case self._Player1Name:
@@ -157,32 +534,32 @@ class GameManager:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "🔄" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     else:
                         print("Invalid card! Please retry.")
                 elif CardToPlay._type == "🔄":
@@ -190,32 +567,32 @@ class GameManager:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")  
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
                     elif self._CardOnTable._type == "🔄":
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     else:
                         print("Invalid card! Please retry.")
                 elif CardToPlay._type == "🚫":
@@ -223,32 +600,32 @@ class GameManager:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")  
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
                     elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "🚫":
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     else:
                         print("Invalid card! Please retry.")
                 elif CardToPlay._type == "➕2️⃣":
@@ -256,41 +633,222 @@ class GameManager:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")  
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
                     elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "🚫" and CardToPlay._colour == self._CardOnTable._colour:
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     elif self._CardOnTable._type == "➕2️⃣":
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
-                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
                         print("\nAfter playing card:")
                         GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                     else:
                         print("Invalid card! Please retry.")
                 elif CardToPlay._type == "🌐":
-                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
-                        print("\nAfter playing card:")
-                        GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")  
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)  
                 elif CardToPlay._type == "🌐➕4️⃣":
                         GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+            case self._Player2Name:
+                if CardToPlay._type == "#️⃣":
+                    if self._CardOnTable._type == "#️⃣" and (CardToPlay._colour == self._CardOnTable._colour or CardToPlay._number == self._CardOnTable._number):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
                         print("\nAfter playing card:")
-                        GameManager.PrintDeck(self, self._Player1Name)
-                        print(f"Card on Table: {self._CardOnTable}")  
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🔄" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🔄":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
+                    elif self._CardOnTable._type == "🔄":
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🚫":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
+                    elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🚫":
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "➕2️⃣":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")  
+                    elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🚫" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "➕2️⃣":
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    elif self._CardOnTable._type == "🌐➕4️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player2Name)
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay) 
+                elif CardToPlay._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player2Name, CardToPlay)
+
+    def DisplayWinner(self, player):
+        figlet = Figlet()
+        figlet.setFont(font = "slant")
+        match player:
+            case self._Player1Name:
+                Text = f"UNO !!!\n{self._Player1Name} Wins !"
+                print(figlet.renderText(Text))
+            case self._Player2Name:
+                Text = f"UNO !!!\n{self._Player2Name} Wins !"
+                print(figlet.renderText(Text))
+
+
+    def GetActionDetails(self, CardToPlay):
+        if CardToPlay._type == "#️⃣":
+            SkipCard = None
+            ReverseCard = None
+            WildCardColour = None
+            Draw2Card = None
+            Draw4WildCardColour = None
+        elif CardToPlay._type == "🔄":
+            SkipCard = None
+            ReverseCard = True
+            WildCardColour = None
+            Draw2Card = None
+            Draw4WildCardColour = None
+        elif CardToPlay._type == "🚫":
+            SkipCard = True
+            ReverseCard = None
+            WildCardColour = None
+            Draw2Card = None
+            Draw4WildCardColour = None
+        elif CardToPlay._type == "➕2️⃣":
+            SkipCard = None
+            ReverseCard = None
+            WildCardColour = None
+            Draw2Card = True
+            Draw4WildCardColour = None
+        elif CardToPlay._type == "🌐":
+            WildCardColour = input("Enter the colour you want for the wildcard (R/G/B/Y): ")
+            while WildCardColour not in ["R", "G", "B", "Y"]:
+                WildCardColour = input("Enter the colour you want for the wildcard (R/G/B/Y): ")
+            SkipCard = None
+            ReverseCard = None
+            Draw2Card = None
+            Draw4WildCardColour = None
+        elif CardToPlay._type == "🌐➕4️⃣":
+            Draw4WildCardColour = input("Enter the colour you want for the wildcard (R/G/B/Y): ")
+            while Draw4WildCardColour not in ["R", "G", "B", "Y"]:
+                Draw4WildCardColour = input("Enter the colour you want for the wildcard (R/G/B/Y): ")
+            SkipCard = None
+            ReverseCard = None
+            Draw2Card = None
+            WildCardColour = None
+        return SkipCard, ReverseCard, Draw2Card, WildCardColour, Draw4WildCardColour
+            
