@@ -4,6 +4,7 @@ from GameManager import GameManager
 def main():
     Game = GameManager()
     Game.ReadCSVFile()
+    system("cls||clear")
     Game.PrintTutorial()
     input("Press enter to continue: ")
     system("cls||clear")
