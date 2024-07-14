@@ -1,6 +1,7 @@
 import Card
 import csv
 import random
+import os
 
 class GameManager:
     def __init__(self):
@@ -10,6 +11,7 @@ class GameManager:
         self._Player2Deck = []
         self._AllCards = []
         self._CardOnTable = Card.Card("","","")
+        self._WildCardColour = ""
 
     @property
     def Player1Name(self):
@@ -43,6 +45,10 @@ class GameManager:
     def CardOnTable(self):
         return self._CardOnTable
     
+    @property
+    def WildCardColour(self):
+        return self._WildCardColour
+        
     def ReadCSVFile(self):
         with open("Cards.csv", encoding="utf-8") as file:
             reader = csv.DictReader(file, fieldnames=["type", "colour", "number"])
@@ -106,13 +112,13 @@ class GameManager:
                 return
         
     def PlayGame(self):
-        CardOnTable = random.choice(self._AllCards)
-        self._AllCards.remove(CardOnTable)
+        self._CardOnTable = random.choice(self._AllCards)
+        self._AllCards.remove(self._CardOnTable)
         while len(self._Player1Deck) != 0 and len(self._Player2Deck) != 0:
             #Player 1's Turn
             print(f"{self._Player1Name}'s turn !")
             GameManager.PrintDeck(self, self._Player1Name)
-            print(f"Card on Table: {CardOnTable}")
+            print(f"Card on Table: {self._CardOnTable}")
             PlayOrDraw = input("Do you want to play or draw a card (P/D): ")
             while (PlayOrDraw != "P" and PlayOrDraw != "D"):
                 PlayOrDraw = input("Invalid, please re-enter !\nDo you want to play or draw a card (P/D): ")
@@ -122,16 +128,17 @@ class GameManager:
                     while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
                         CardToPlayIndex = int(input("Invalid, Please re-enter the number of card you want to play: "))
                     CardToPlay = self._Player1Deck[CardToPlayIndex-1]
-                    if CardToPlay._type == "#️⃣":
-                        if CardOnTable._type == "#️⃣" and (CardToPlay._colour == CardOnTable._colour or CardToPlay._number == CardOnTable._number):
-                            GameManager.PlayCard(self, self._Player1Name, CardToPlay)
-                            GameManager.PrintDeck(self, self._Player1Name)
-                            print(self.CardOnTable)
-                            return
-                    
-                    
+                    GameManager.PlayCard(self, CardToPlay, self._Player1Name)    
+                case "D":
+                        GameManager.DrawCard(self, self._Player1Name)
+                        print("After Drawing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        PlayOrDraw = input("Do you want to play a card ? (Y/N):")
+                        while PlayOrDraw != "Y" and PlayOrDraw != "N":
+                            PlayOrDraw = input("Invalid choice ! Do you want to play a card ? (Y/N):")
+                        
 
-    def PlayCard(self, player, card):
+    def UpdatePile(self, player, card):
         match player:
             case self._Player1Name:
                 self._Player1Deck.remove(card)
@@ -141,3 +148,149 @@ class GameManager:
                 self._Player2Deck.remove(card)
                 self._CardOnTable = card
                 return
+
+    def PlayCard(self, CardToPlay, player):
+        match player:
+            case self._Player1Name:
+                if CardToPlay._type == "#️⃣":
+                    if self._CardOnTable._type == "#️⃣" and (CardToPlay._colour == self._CardOnTable._colour or CardToPlay._number == self._CardOnTable._number):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🔄" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🔄":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")  
+                    elif self._CardOnTable._type == "🔄":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🚫" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🚫":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")  
+                    elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🚫":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "➕2️⃣" and (CardToPlay._colour == self._CardOnTable._colour):
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "➕2️⃣":
+                    if self._CardOnTable._type == "#️⃣" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")  
+                    elif self._CardOnTable._type == "🔄" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🚫" and CardToPlay._colour == self._CardOnTable._colour:
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "➕2️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    elif self._CardOnTable._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")
+                    else:
+                        print("Invalid card! Please retry.")
+                elif CardToPlay._type == "🌐":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")  
+                elif CardToPlay._type == "🌐➕4️⃣":
+                        GameManager.UpdatePile(self, self._Player1Name, CardToPlay)
+                        print("\nAfter playing card:")
+                        GameManager.PrintDeck(self, self._Player1Name)
+                        print(f"Card on Table: {self._CardOnTable}")  
