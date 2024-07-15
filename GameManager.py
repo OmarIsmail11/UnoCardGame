@@ -92,12 +92,12 @@ class GameManager:
         print(f"5) WildCard {self._AllCards[102]} : If you have this consider yourself lucky as this card doesn't need to be matched and when played lets you choose what colour the opponent should play.")
         print(f"6) Draw 4 WildCard {self._AllCards[105]} : This is the most powerful card in the game ! Has same wildcard traits + opponent draws 4 cards and skips his turn.")
         print("\nHow to use the program:")
-        print("-To play a card enter the number of card in your deck. ex: Omar's Deck: [Card1,Card2,Card3] if you want to play Card2 enter 2.")
+        print("-To play a card enter the card in your deck. ex: Omar's Deck: [Card1,Card2,Card3] if you want to play Card2 enter 2.")
         print("-With each turn the player's deck is printed along with the CardOnTable.")
         print("-Program automatically checks if you have no eligible cards to play on your deck and draws a card for you.")
         print("-If drew card isn't eligible to play then automatically another card is drew and player skips turn.")
         print("-If selected card to play isn't matching user is prompt to re-select a valid card.")
-        print("-Once each player finishes his turn please don't look at the screen to avoid seeing your opponents card 👀.")
+        print("-Once each player finishes his turn please don't look at the screen to avoid seeing your opponents card 👀 .")
         print('\n\n\t\t\t\t\t" Let the games begin ! ⚔ " ~ Claudius from the Hunger Games Series\n\n')
 
     def StartGame(self):
@@ -144,13 +144,13 @@ class GameManager:
                 PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player1Name, self._Player1Deck)
                 match PlayerCanPlay:
                     case True:
-                        CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                        CardToPlayIndex = int(input("Please enter the card you want to play: "))
                         while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
-                            CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                            CardToPlayIndex = int(input("Invalid Number ! Please re-enter the card you want to play: "))
                         CardToPlay = self._Player1Deck[CardToPlayIndex-1]
                         CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                         while not CardCanBePlayed:
-                            CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                            CardToPlayIndex = int(input("Invalid Card ! Please re-enter the card you want to play: "))
                             CardToPlay = self._Player1Deck[CardToPlayIndex-1]
                             CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                         GameManager.PlayCard(self, CardToPlay, self._Player1Name)
@@ -178,7 +178,7 @@ class GameManager:
                                     self._CardOnTable._colour = "🔵"
                                 case "Y":
                                     self._CardOnTable._colour = "🟡"
-                            print("After choosing colour:")
+                            print("\n\nAfter choosing colour:")
                             print("After playing card:")
                             GameManager.PrintDeck(self, self._Player1Name)
                             print(f"Card on Table: {self._CardOnTable}\n\n")
@@ -196,7 +196,7 @@ class GameManager:
                                     self._CardOnTable._colour = "🔵"
                                 case "Y":
                                     self._CardOnTable._colour = "🟡"
-                            print("After choosing colour:")
+                            print("\n\nAfter choosing colour:")
                             print("After playing card:")
                             GameManager.PrintDeck(self, self._Player1Name)
                             print(f"Card on Table: {self._CardOnTable}\n\n")
@@ -205,7 +205,7 @@ class GameManager:
                             continue
                     case False:
                             GameManager.DrawCard(self, self._Player1Name)
-                            print("You have no valid cards in deck therefore you drew a card.")
+                            print("\n\nYou have no valid cards in deck therefore you drew a card.")
                             print("After Drawing card:")
                             GameManager.PrintDeck(self, self._Player1Name)
                             print(f"Card on Table: {self._CardOnTable}")
@@ -217,13 +217,13 @@ class GameManager:
                                 GameManager.PrintDeck(self, self._Player1Name)
                                 print(f"Card on Table: {self._CardOnTable}\n\n")
                             else:
-                                CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                                CardToPlayIndex = int(input("Please enter the card you want to play: "))
                                 while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
-                                    CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                                    CardToPlayIndex = int(input("Invalid Number ! Please re-enter the card you want to play: "))
                                 CardToPlay = self._Player1Deck[CardToPlayIndex-1]
                                 CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                                 while not CardCanBePlayed:
-                                    CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                                    CardToPlayIndex = int(input("Invalid Card ! Please re-enter the card you want to play: "))
                                     CardToPlay = self._Player1Deck[CardToPlayIndex-1]
                                     CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                                 GameManager.PlayCard(self, CardToPlay, self._Player1Name)
@@ -251,7 +251,7 @@ class GameManager:
                                             self._CardOnTable._colour = "🔵"
                                         case "Y":
                                             self._CardOnTable._colour = "🟡"
-                                    print("After choosing colour:")
+                                    print("\n\nAfter choosing colour:")
                                     print("After playing card:")
                                     GameManager.PrintDeck(self, self._Player1Name)
                                     print(f"Card on Table: {self._CardOnTable}\n\n")
@@ -269,7 +269,7 @@ class GameManager:
                                             self._CardOnTable._colour = "🔵"
                                         case "Y":
                                             self._CardOnTable._colour = "🟡"
-                                    print("After choosing colour:")
+                                    print("\n\nAfter choosing colour:")
                                     print("After playing card:")
                                     GameManager.PrintDeck(self, self._Player1Name)
                                     print(f"Card on Table: {self._CardOnTable}")
@@ -288,13 +288,13 @@ class GameManager:
             PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player2Name, self._Player2Deck)
             match PlayerCanPlay:
                 case True:
-                    CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                    CardToPlayIndex = int(input("Please enter the card you want to play: "))
                     while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player2Deck):
-                        CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                        CardToPlayIndex = int(input("Invalid Number ! Please re-enter the card you want to play: "))
                     CardToPlay = self._Player2Deck[CardToPlayIndex-1]
                     CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                     while not CardCanBePlayed:
-                        CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                        CardToPlayIndex = int(input("Invalid Card ! Please re-enter the card you want to play: "))
                         CardToPlay = self._Player2Deck[CardToPlayIndex-1]
                         CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                     GameManager.PlayCard(self, CardToPlay, self._Player2Name)
@@ -324,7 +324,7 @@ class GameManager:
                                 self._CardOnTable._colour = "🔵"
                             case "Y":
                                 self._CardOnTable._colour = "🟡"
-                        print("After choosing colour:")
+                        print("\n\nAfter choosing colour:")
                         print("After playing card:")
                         GameManager.PrintDeck(self, self._Player2Name)
                         print(f"Card on Table: {self._CardOnTable}")
@@ -342,7 +342,7 @@ class GameManager:
                                 self._CardOnTable._colour = "🔵"
                             case "Y":
                                 self._CardOnTable._colour = "🟡"
-                        print("After choosing colour:")
+                        print("\n\nAfter choosing colour:")
                         print("After playing card:")
                         GameManager.PrintDeck(self, self._Player2Name)
                         print(f"Card on Table: {self._CardOnTable}")
@@ -352,25 +352,26 @@ class GameManager:
                         continue
                       
                 case False:
-                        print("You have no valid cards in deck therefore you drew a card.")
+                        print("\n\nYou have no valid cards in deck therefore you drew a card.")
                         GameManager.DrawCard(self, self._Player2Name)
                         print("After Drawing card:")
                         GameManager.PrintDeck(self, self._Player2Name)
                         print(f"Card on Table: {self._CardOnTable}")
                         PlayerCanPlay = GameManager.CheckIfPlayerCanPlay(self, self._Player2Name, self._Player2Deck)
                         if not PlayerCanPlay:
-                            print("There are no valid cards to play so you need to draw another card and skip turn.")
+                            print("\n\nThere are no valid cards to play so you need to draw another card and skip turn.")
                             GameManager.DrawCard(self, self._Player2Name)
                             print("After Drawing card:")
                             GameManager.PrintDeck(self, self._Player2Name)
+                            print(f"Card on Table: {self._CardOnTable}\n\n")
                         else:
-                            CardToPlayIndex = int(input("Please enter the number of card you want to play: "))
+                            CardToPlayIndex = int(input("Please enter the card you want to play: "))
                             while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player2Deck):
-                                CardToPlayIndex = int(input("Invalid Number ! Please re-enter the number of card you want to play: "))
+                                CardToPlayIndex = int(input("Invalid Number ! Please re-enter the card you want to play: "))
                             CardToPlay = self._Player2Deck[CardToPlayIndex-1]
                             CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                             while not CardCanBePlayed:
-                                CardToPlayIndex = int(input("Invalid Card ! Please re-enter the number of card you want to play: "))
+                                CardToPlayIndex = int(input("Invalid Card ! Please re-enter the card you want to play: "))
                                 CardToPlay = self._Player2Deck[CardToPlayIndex-1]
                                 CardCanBePlayed = GameManager.CheckIfCardCanBePlayed(self, CardToPlay)
                             GameManager.PlayCard(self, CardToPlay, self._Player1Name)
@@ -400,10 +401,10 @@ class GameManager:
                                         self._CardOnTable._colour = "🔵"
                                     case "Y":
                                         self._CardOnTable._colour = "🟡"
-                                print("After choosing colour:")
+                                print("\n\nAfter choosing colour:")
                                 print("After playing card:")
                                 GameManager.PrintDeck(self, self._Player2Name)
-                                print(f"Card on Table: {self._CardOnTable}")
+                                print(f"Card on Table: {self._CardOnTable}\n\n")
                             elif Draw4WildCardColour != None:
                                 GameManager.DrawCard(self, self._Player1Name)
                                 GameManager.DrawCard(self, self._Player1Name)
@@ -418,7 +419,7 @@ class GameManager:
                                         self._CardOnTable._colour = "🔵"
                                     case "Y":
                                         self._CardOnTable._colour = "🟡"
-                                print("After choosing colour:")
+                                print("\n\nAfter choosing colour:")
                                 print("After playing card:")
                                 GameManager.PrintDeck(self, self._Player2Name)
                                 print(f"Card on Table: {self._CardOnTable}")
@@ -430,7 +431,7 @@ class GameManager:
             GameManager.DisplayWinner(self, self._Player1Name)
         if len(self._Player2Deck) == 0:
             GameManager.DisplayWinner(self, self._Player2Name)                
-
+    
     def UpdatePile(self, player, card):
         match player:
             case self._Player1Name:
@@ -808,10 +809,10 @@ class GameManager:
         figlet.setFont(font = "slant")
         match player:
             case self._Player1Name:
-                Text = f"UNO !!!\n{self._Player1Name} Wins !"
+                Text = f"UNO ! ! !\n{self._Player1Name} Wins !"
                 print(figlet.renderText(Text))
             case self._Player2Name:
-                Text = f"UNO !!!\n{self._Player2Name} Wins !"
+                Text = f"UNO ! ! !\n{self._Player2Name} Wins !"
                 print(figlet.renderText(Text))
 
 
