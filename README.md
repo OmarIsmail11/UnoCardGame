@@ -15,7 +15,7 @@ This project is a Python-based implementation of the popular card game UNO. The 
 3. Players take turns matching a card from their hand to the top card of the discard pile by either color or number.
 4. Special action cards can change the direction of play, skip players, force opponents to draw cards, or change the current color.
 5. The first player to play all of their cards wins the game.
-### Getting Started
+## Installation
 Note: To run the game, make sure you have Python 3.x installed.
 1. Clone the repository
 ```
