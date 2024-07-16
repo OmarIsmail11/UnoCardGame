@@ -159,6 +159,9 @@ class GameManager:
                         if SkipCard == True or ReverseCard == True:
                             #skip opponent's turn
                             print(f"{self._Player2Name} will skip his turn !\n\n")
+                            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                            if EndGame:
+                                break
                             continue
                         #check if Draw2Card
                         elif Draw2Card == True:
@@ -167,6 +170,9 @@ class GameManager:
                             GameManager.DrawCard(self, self._Player2Name)
                             #skip opponent's turn
                             print(f"{self._Player2Name} will skip his turn !\n\n")
+                            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                            if EndGame:
+                                break
                             continue
                         elif WildCardColour != None:
                             match WildCardColour:
@@ -182,6 +188,9 @@ class GameManager:
                             print("After playing card:")
                             GameManager.PrintDeck(self, self._Player1Name)
                             print(f"Card on Table: {self._CardOnTable}\n\n")
+                            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                            if EndGame:
+                                break
                         elif Draw4WildCardColour != None:
                             GameManager.DrawCard(self, self._Player2Name)
                             GameManager.DrawCard(self, self._Player2Name)
@@ -202,7 +211,14 @@ class GameManager:
                             print(f"Card on Table: {self._CardOnTable}\n\n")
                             #skip opponent's turn
                             print(f"{self._Player2Name} will skip his turn !\n\n")
+                            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                            if EndGame:
+                                break
                             continue
+                        else:
+                            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                            if EndGame:
+                                break
                     case False:
                             GameManager.DrawCard(self, self._Player1Name)
                             print("\n\nYou have no valid cards in deck therefore you drew a card.")
@@ -232,6 +248,9 @@ class GameManager:
                                 if SkipCard == True or ReverseCard == True:
                                     #skip opponent's turn
                                     print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                    if EndGame:
+                                       break
                                     continue
                                 #check if Draw2Card
                                 elif Draw2Card == True:
@@ -240,6 +259,9 @@ class GameManager:
                                     GameManager.DrawCard(self, self._Player2Name)
                                     #skip opponent's turn
                                     print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                    if EndGame:
+                                        break
                                     continue
                                 elif WildCardColour != None:
                                     match WildCardColour:
@@ -255,6 +277,9 @@ class GameManager:
                                     print("After playing card:")
                                     GameManager.PrintDeck(self, self._Player1Name)
                                     print(f"Card on Table: {self._CardOnTable}\n\n")
+                                    EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                    if EndGame:
+                                        break
                                 elif Draw4WildCardColour != None:
                                     GameManager.DrawCard(self, self._Player2Name)
                                     GameManager.DrawCard(self, self._Player2Name)
@@ -275,12 +300,18 @@ class GameManager:
                                     print(f"Card on Table: {self._CardOnTable}")
                                     #skip opponent's turn
                                     print(f"{self._Player2Name} will skip his turn !\n\n")
+                                    EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                    if EndGame:
+                                        break
                                     continue
+                                else:
+                                    EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                    if EndGame:
+                                        break
             self._Player1SkipsTurn = False
             #Player 2's Turn
-            if len(self._Player1Deck) == 0:
-                break
-            if len(self._Player2Deck) == 0:
+            EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+            if EndGame:
                 break
             print(f"{self._Player2Name}'s turn !")
             GameManager.PrintDeck(self, self._Player2Name)
@@ -304,6 +335,9 @@ class GameManager:
                         #skip opponent's turn
                         self._Player1SkipsTurn = True
                         print(f"{self._Player1Name} will skip his turn !\n\n")
+                        EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                        if EndGame:
+                            break
                         continue
                     #check if Draw2Card
                     elif Draw2Card == True:
@@ -313,6 +347,9 @@ class GameManager:
                         self._Player1SkipsTurn = True
                         #skip opponent's turn
                         print(f"{self._Player1Name} will skip his turn !\n\n")
+                        EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                        if EndGame:
+                            break
                         continue
                     elif WildCardColour != None:
                         match WildCardColour:
@@ -327,7 +364,10 @@ class GameManager:
                         print("\n\nAfter choosing colour:")
                         print("After playing card:")
                         GameManager.PrintDeck(self, self._Player2Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
+                        EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                        if EndGame:
+                            break
                     elif Draw4WildCardColour != None:
                         GameManager.DrawCard(self, self._Player1Name)
                         GameManager.DrawCard(self, self._Player1Name)
@@ -345,12 +385,18 @@ class GameManager:
                         print("\n\nAfter choosing colour:")
                         print("After playing card:")
                         GameManager.PrintDeck(self, self._Player2Name)
-                        print(f"Card on Table: {self._CardOnTable}")
+                        print(f"Card on Table: {self._CardOnTable}\n\n")
                         #skip opponent's turn
                         self._Player1SkipsTurn = True
                         print(f"{self._Player1Name} will skip his turn !\n\n")
+                        EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                        if EndGame:
+                            break
                         continue
-                      
+                    else:
+                        EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                        if EndGame:
+                            break
                 case False:
                         print("\n\nYou have no valid cards in deck therefore you drew a card.")
                         GameManager.DrawCard(self, self._Player2Name)
@@ -381,6 +427,9 @@ class GameManager:
                                 #skip opponent's turn
                                 self._Player1SkipsTurn = True
                                 print(f"{self._Player1Name} will skip his turn !\n\n")
+                                EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                if EndGame:
+                                    break
                                 continue
                             #check if Draw2Card
                             elif Draw2Card == True:
@@ -390,6 +439,9 @@ class GameManager:
                                 #skip opponent's turn
                                 self._Player1SkipsTurn = True
                                 print(f"{self._Player1Name} will skip his turn !\n\n")
+                                EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                if EndGame:
+                                    break
                                 continue
                             elif WildCardColour != None:
                                 match WildCardColour:
@@ -405,6 +457,9 @@ class GameManager:
                                 print("After playing card:")
                                 GameManager.PrintDeck(self, self._Player2Name)
                                 print(f"Card on Table: {self._CardOnTable}\n\n")
+                                EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                if EndGame:
+                                    break
                             elif Draw4WildCardColour != None:
                                 GameManager.DrawCard(self, self._Player1Name)
                                 GameManager.DrawCard(self, self._Player1Name)
@@ -422,15 +477,22 @@ class GameManager:
                                 print("\n\nAfter choosing colour:")
                                 print("After playing card:")
                                 GameManager.PrintDeck(self, self._Player2Name)
-                                print(f"Card on Table: {self._CardOnTable}")
+                                print(f"Card on Table: {self._CardOnTable}\n\n")
                                 #skip opponent's turn
                                 self._Player1SkipsTurn = True
                                 print(f"{self._Player1Name} will skip his turn !\n\n")
+                                EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
+                                if EndGame:
+                                    break
                                 continue            
+
+    
+    def CheckWin(self):
         if len(self._Player1Deck) == 0:
-            GameManager.DisplayWinner(self, self._Player1Name)
+            return self._Player1Name
         if len(self._Player2Deck) == 0:
-            GameManager.DisplayWinner(self, self._Player2Name)                
+            return self._Player2Name
+        return None
     
     def UpdatePile(self, player, card):
         match player:
@@ -811,9 +873,13 @@ class GameManager:
             case self._Player1Name:
                 Text = f"UNO ! ! !\n{self._Player1Name} Wins !"
                 print(figlet.renderText(Text))
+                return True
             case self._Player2Name:
                 Text = f"UNO ! ! !\n{self._Player2Name} Wins !"
                 print(figlet.renderText(Text))
+                return True
+            case _:
+                return False
 
 
     def GetActionDetails(self, CardToPlay):
