@@ -1,6 +1,6 @@
 # Uno-Card-Game-PvP
 ![Uno2](https://github.com/user-attachments/assets/f266bf1b-4e48-4790-b1e3-e07acef32498)
-## About The Project
+## About
 Welcome to the UNO Card Game !                                        
 This project is a Python-based implementation of the popular card game UNO. The game is designed to be played by 2 players, with the goal of being the first to get rid of all your cards. The game follows the traditional UNO rules, with a deck consisting of four suits (Red, Green, Blue, Yellow) and special action cards that add strategic elements to the gameplay. 
 ## Features
