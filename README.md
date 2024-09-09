@@ -9,12 +9,10 @@ This project is a Python-based implementation of the popular card game UNO. The 
 - Implementation of special action cards (Skip, Reverse, Draw Two, Wild, and Wild Draw Four)
 - User-friendly text-based interface
 - Built using Object-Oriented Programming (OOP) principles for better code organization and maintenance
-  
-![image](https://github.com/user-attachments/assets/6e5dad77-f62d-4138-bc23-994c57212565)
+## Demo
+https://github.com/user-attachments/assets/9dcc81fa-d8c9-4a75-a57d-17a5db9d61f2
 
-![image](https://github.com/user-attachments/assets/5dafe2b1-72a3-42e1-b7c7-9b18afd424d6)
 
-![image](https://github.com/user-attachments/assets/99abd3ac-c4e8-4808-a562-36cb6fef1c22)
 
 
 ## How to Play
