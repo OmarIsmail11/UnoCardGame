@@ -162,6 +162,8 @@ class GameManager:
                             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                             if EndGame:
                                 break
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                             continue
                         #check if Draw2Card
                         elif Draw2Card == True:
@@ -173,6 +175,8 @@ class GameManager:
                             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                             if EndGame:
                                 break
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                             continue
                         elif WildCardColour != None:
                             match WildCardColour:
@@ -191,6 +195,8 @@ class GameManager:
                             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                             if EndGame:
                                 break
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                         elif Draw4WildCardColour != None:
                             GameManager.DrawCard(self, self._Player2Name)
                             GameManager.DrawCard(self, self._Player2Name)
@@ -214,11 +220,15 @@ class GameManager:
                             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                             if EndGame:
                                 break
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                             continue
                         else:
                             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                             if EndGame:
                                 break
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                     case False:
                             GameManager.DrawCard(self, self._Player1Name)
                             print("\n\nYou have no valid cards in deck therefore you drew a card.")
@@ -232,6 +242,8 @@ class GameManager:
                                 print("After Drawing card:")
                                 GameManager.PrintDeck(self, self._Player1Name)
                                 print(f"Card on Table: {self._CardOnTable}\n\n")
+                                input("Press enter to continue: ")
+                                system("cls||clear")
                             else:
                                 CardToPlayIndex = int(input("Please enter the card you want to play: "))
                                 while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player1Deck):
@@ -251,6 +263,8 @@ class GameManager:
                                     EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                     if EndGame:
                                        break
+                                    input("Press enter to continue: ")
+                                    system("cls||clear")
                                     continue
                                 #check if Draw2Card
                                 elif Draw2Card == True:
@@ -262,6 +276,8 @@ class GameManager:
                                     EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                     if EndGame:
                                         break
+                                    input("Press enter to continue: ")
+                                    system("cls||clear")
                                     continue
                                 elif WildCardColour != None:
                                     match WildCardColour:
@@ -280,6 +296,8 @@ class GameManager:
                                     EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                     if EndGame:
                                         break
+                                    input("Press enter to continue: ")
+                                    system("cls||clear")
                                 elif Draw4WildCardColour != None:
                                     GameManager.DrawCard(self, self._Player2Name)
                                     GameManager.DrawCard(self, self._Player2Name)
@@ -303,11 +321,15 @@ class GameManager:
                                     EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                     if EndGame:
                                         break
+                                    input("Press enter to continue: ")
+                                    system("cls||clear")
                                     continue
                                 else:
                                     EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                     if EndGame:
                                         break
+                                    input("Press enter to continue: ")
+                                    system("cls||clear")
             self._Player1SkipsTurn = False
             #Player 2's Turn
             EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
@@ -338,6 +360,8 @@ class GameManager:
                         EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                         if EndGame:
                             break
+                        input("Press enter to continue: ")
+                        system("cls||clear")
                         continue
                     #check if Draw2Card
                     elif Draw2Card == True:
@@ -350,6 +374,8 @@ class GameManager:
                         EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                         if EndGame:
                             break
+                        input("Press enter to continue: ")
+                        system("cls||clear")
                         continue
                     elif WildCardColour != None:
                         match WildCardColour:
@@ -368,6 +394,8 @@ class GameManager:
                         EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                         if EndGame:
                             break
+                        input("Press enter to continue: ")
+                        system("cls||clear")
                     elif Draw4WildCardColour != None:
                         GameManager.DrawCard(self, self._Player1Name)
                         GameManager.DrawCard(self, self._Player1Name)
@@ -392,11 +420,15 @@ class GameManager:
                         EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                         if EndGame:
                             break
+                        input("Press enter to continue: ")
+                        system("cls||clear")
                         continue
                     else:
                         EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                         if EndGame:
                             break
+                        input("Press enter to continue: ")
+                        system("cls||clear")
                 case False:
                         print("\n\nYou have no valid cards in deck therefore you drew a card.")
                         GameManager.DrawCard(self, self._Player2Name)
@@ -410,6 +442,8 @@ class GameManager:
                             print("After Drawing card:")
                             GameManager.PrintDeck(self, self._Player2Name)
                             print(f"Card on Table: {self._CardOnTable}\n\n")
+                            input("Press enter to continue: ")
+                            system("cls||clear")
                         else:
                             CardToPlayIndex = int(input("Please enter the card you want to play: "))
                             while CardToPlayIndex <= 0 or CardToPlayIndex > len(self._Player2Deck):
@@ -430,6 +464,8 @@ class GameManager:
                                 EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                 if EndGame:
                                     break
+                                input("Press enter to continue: ")
+                                system("cls||clear")
                                 continue
                             #check if Draw2Card
                             elif Draw2Card == True:
@@ -442,6 +478,8 @@ class GameManager:
                                 EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                 if EndGame:
                                     break
+                                input("Press enter to continue: ")
+                                system("cls||clear")
                                 continue
                             elif WildCardColour != None:
                                 match WildCardColour:
@@ -460,6 +498,8 @@ class GameManager:
                                 EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                 if EndGame:
                                     break
+                                input("Press enter to continue: ")
+                                system("cls||clear")
                             elif Draw4WildCardColour != None:
                                 GameManager.DrawCard(self, self._Player1Name)
                                 GameManager.DrawCard(self, self._Player1Name)
@@ -484,6 +524,8 @@ class GameManager:
                                 EndGame = GameManager.DisplayWinner(self, GameManager.CheckWin(self))
                                 if EndGame:
                                     break
+                                input("Press enter to continue: ")
+                                system("cls||clear")
                                 continue            
 
     
