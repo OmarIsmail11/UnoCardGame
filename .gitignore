@@ -1,0 +1,16 @@
+# VS Code settings
+.vscode/
+
+# JetBrains (PyCharm, IntelliJ) settings
+.idea/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and environment files
+*.log
+.env
+.venv/
