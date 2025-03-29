@@ -31,9 +31,9 @@ Note: To run the game, make sure you have Python 3.x installed.
 ```
  cd FolderName
 ```
-3. Install tkinker library from your IDE
+3. Install tkinter library from your IDE
 ```
- pip install tkinker 
+ pip install tkinter 
 ```
 4. Execute the startScreen file in your Python environment
 ```
